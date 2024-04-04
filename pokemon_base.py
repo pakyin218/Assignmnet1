@@ -29,6 +29,12 @@ class TypeEffectiveness:
     """
     Represents the type effectiveness of one Pokemon type against another.
     """
+    effect_table=ArrayR(len(PokeType))
+    file = open('type_effectiveness.csv','r')
+    header = file.readline()
+    for i in range(0,effect_table.__len__()):
+        effect_table.__setitem__(i,file.readline().strip('\n').split(','))
+
 
     @classmethod
     def get_effectiveness(cls, attack_type: PokeType, defend_type: PokeType) -> float:
@@ -42,14 +48,16 @@ class TypeEffectiveness:
         Returns:
             float: The effectiveness of the attack, as a float value between 0 and 4.
         """
-        raise NotImplementedError
+        return float(cls.effect_table[attack_type.value][defend_type.value])
+           
+        
 
     def __len__(self) -> int:
         """
         Returns the number of types of Pokemon
         """
-        raise NotImplementedError
-
+        return len(self.array)
+    
 
 class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-attributes
     """
@@ -161,7 +169,18 @@ class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-
         Returns:
             int: The damage that this Pokemon inflicts on the other Pokemon during an attack.
         """
-        raise NotImplementedError
+        attack = self.get_battle_power
+        defense = other_pokemon.get_defence
+        if other_pokemon.get_defence < self.battle_power/2 :
+            damage = attack - defense
+        elif defense < attack:
+            damage = round(attack * 5/8 - defense /4)
+        else:
+            damage = round(attack/4)       
+        
+        effect_damage = damage* TypeEffectiveness.get_effectiveness(self.get_poketype,other_pokemon.get_poketype)
+        return effect_damage
+
 
     def defend(self, damage: int) -> None:
         """
@@ -189,7 +208,13 @@ class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-
         Evolves the Pokemon to the next stage in its evolution line, and updates
           its attributes accordingly.
         """
-        raise NotImplementedError
+        self.name = self.evolution_line+1
+        self.battle_power *= 1.5
+        self.health *= 1.5
+        self.speed *= 1.5
+        self.defence *= 1.5
+
+        
 
     def is_alive(self) -> bool:
         """
