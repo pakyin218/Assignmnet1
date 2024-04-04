@@ -56,7 +56,7 @@ class TypeEffectiveness:
         """
         Returns the number of types of Pokemon
         """
-        return len(self.array)
+        return len(self.effect_table)
     
 
 class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-attributes
