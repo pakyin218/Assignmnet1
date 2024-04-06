@@ -169,16 +169,17 @@ class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-
         Returns:
             int: The damage that this Pokemon inflicts on the other Pokemon during an attack.
         """
-        attack = self.get_battle_power
-        defense = other_pokemon.get_defence
-        if other_pokemon.get_defence < self.battle_power/2 :
+        attack = self.get_battle_power()
+        defense = other_pokemon.get_defence()
+        if defense < attack / 2 :
             damage = attack - defense
         elif defense < attack:
             damage = round(attack * 5/8 - defense /4)
         else:
             damage = round(attack/4)       
         
-        effect_damage = damage* TypeEffectiveness.get_effectiveness(self.get_poketype,other_pokemon.get_poketype)
+        ef = TypeEffectiveness()
+        effect_damage = damage* ef.get_effectiveness(self.get_poketype(),other_pokemon.get_poketype())
         return effect_damage
 
 
