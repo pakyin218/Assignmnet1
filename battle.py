@@ -3,10 +3,6 @@ from poke_team import Trainer, PokeTeam
 from typing import Tuple
 from battle_mode import BattleMode
 
-
-from data_structures.stack_adt import Stack
-from data_structures.queue_adt import CircularQueue
-
 class Battle:
 
     def __init__(self, trainer_1: Trainer, trainer_2: Trainer, battle_mode: BattleMode, criterion = "health") -> None:
@@ -17,33 +13,63 @@ class Battle:
 
     def commence_battle(self) -> Trainer | None:
         if self.bm == BattleMode.SET:
-            print
+            self._create_teams(BattleMode.SET)
+            self.set_battle()
+
+            if t1.TrainerTeam.__len__() == 0:
+                print("The winner is "+t2.get_name())
+            elif t2.TrainerTeam.__len__() == 0:
+                print("The winner is "+t1.get_name())    
+            else:
+                print("draw")    
         elif self.bm == BattleMode.ROTATE:
-            print
-        else:
-            print
+            self._create_teams(BattleMode.ROTATE)
+            self.rotate_battle()
+            
+            if t1.TrainerTeam.__len__() == 0:
+                print("The winner is "+t2.get_name())
+            elif t2.TrainerTeam.__len__() == 0:
+                print("The winner is "+t1.get_name())    
+            else:
+                print("draw") 
+        elif self.bm == BattleMode.OPTIMISE:
+            self._create_teams(BattleMode.OPTIMISE)
+            self.optimise_battle()
+
+            if t1.TrainerTeam.__len__() == 0:
+                print("The winner is "+t2.get_name())
+            elif t2.TrainerTeam.__len__() == 0:
+                print("The winner is "+t1.get_name())    
+            else:
+                print("Its a draw") 
         
 
     def _create_teams(self, battle_mode: BattleMode , criterion: None) -> None:
         if battle_mode == BattleMode.SET:
-
             t1.pick_team("Random")
             t2.pick_team("Random")
+            t1.TrainerTeam.assemble_team(BattleMode.SET)
+            t2.TrainerTeam.assemble_team(BattleMode.SET)
 
         elif battle_mode == BattleMode.ROTATE:
-
             t1.pick_team("Random")
             t2.pick_team("Random")
+            t1.TrainerTeam.assemble_team(BattleMode.ROTATE)
+            t2.TrainerTeam.assemble_team(BattleMode.ROTATE)
 
         elif battle_mode == BattleMode.OPTIMISE:
             t1.pick_team("Random")
-            t2.pick_team("Random")    
+            t2.pick_team("Random")
+            t1.TrainerTeam.assign_team(BattleMode.OPTIMISE,criterion)
+            t2.TrainerTeam.assign_team(BattleMode.OPTIMISE,criterion)    
 
 
-        raise NotImplementedError
+        
 
     def set_battle(self) -> PokeTeam | None:
         raise NotImplementedError
+
+        
 
     def rotate_battle(self) -> PokeTeam | None:
         raise NotImplementedError

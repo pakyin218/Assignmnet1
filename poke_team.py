@@ -37,9 +37,6 @@ class PokeTeam:
                 self.team.__setitem__(i,self.POKE_LIST[member])
                 
 
-        
-        
-                
     def choose_randomly(self) -> None:
         all_pokemon = get_all_pokemon_types()
         self.team_count = 0
@@ -78,12 +75,7 @@ class PokeTeam:
                 tempSorted.add(ListItem(self.team[i].value(),self.team[i].value().get_level()))
             self.team = tempSorted
 
-        else:
-            self.assign_team()                    
-        
     
-
-
     def assemble_team(self, battle_mode: BattleMode) -> None:
         if battle_mode == BattleMode.SET:
             tempStack = ArrayStack(self.team.__len__())
@@ -95,28 +87,50 @@ class PokeTeam:
             tempQueue = CircularQueue(self.team.__len__())
             for i in range(self.team.__len__()):
                 tempQueue.append(self.team[i])
-            self.team = tempQueue 
-               
-           
+            self.team = tempQueue
 
-            123456
-
-            123654  
+        
 
 
     def special(self, battle_mode: BattleMode) -> None:
             if battle_mode == BattleMode.SET:
-                temp = CircularQueue(self.team.__len__()//2)
-                for i in range(0,self.team.__len__()//2):
-                    temp.append(self.team.pop())
-                for i in range(0,self.team.__len__()//2):
-                    self.team.push(temp.serve())
+                tempS = ArrayStack(self.team.__len()//2)
+                tempQ = CircularQueue(self.team.__len__())
+                
+                #push first 3 items(6th,5th,4th selected) in a temperory stack (tempS) (by popping self.team)
+                for i in range(tempS.__len__()):
+                    tempS.push(self.team.pop())
+
+                #append remaining 3items in self.team to a temperory queue (tempQ) (by popping self.team)
+                for i in range(tempQ.__len__()//2):
+                    tempQ.serve(self.team.pop())
+
+                #append first 3 items(6th,5th,4th selected) to temperory queue (tempQ) (by popping tempS)
+                for i in range(tempS.__len__()):
+                    tempQ.append(tempS.pop())
+                
+                #push all items in tempQ back to self.team (by serving tempQ)
+                for i in range(tempQ.__len__()):
+                    self.team.push(tempQ.serve())    
+
                 
             elif battle_mode == BattleMode.ROTATE:
                 temp = ArrayStack(self.team.__len__()//2)
-                for i in range(0,self.team.__len__()//2):
-                    temp.push()
-                    
+
+                #append first 3 items to the back of the queue (by serving self.team)
+                for i in range(0,self.team.__len__()//2): 
+                    self.team.append(self.team.serve())
+
+                #push bottom 3 items of self.team in a temperory stack (by serving self.team)
+                for i in range(0,self.team.__len()//2):
+                    temp.push(self.team.serve())
+
+                #append those 3 item back to self.team-> [1,2,3,6,5,4] (by popping temp)
+                for i in range(0,temp.__len__()):
+                    self.team.append(temp.pop())
+
+            #elif battle_mode == BattleMode.OPTIMISE:
+                
 
 
 
