@@ -45,7 +45,7 @@ class PokeTeam:
             self.team[i] = all_pokemon[rand_int]()
             self.team_count += 1
 
-    def regenerate_team(self) -> None:
+    def regenerate_team(self, battle_mode: BattleMode, criterion: str = None) -> None:
         raise NotImplementedError
     
     def assign_team(self, criterion: str = None) -> None:
@@ -94,7 +94,7 @@ class PokeTeam:
 
     def special(self, battle_mode: BattleMode) -> None:
             if battle_mode == BattleMode.SET:
-                tempS = ArrayStack(self.team.__len()//2)
+                tempS = ArrayStack(self.team.__len__()//2)
                 tempQ = CircularQueue(self.team.__len__())
                 
                 #push first 3 items(6th,5th,4th selected) in a temperory stack (tempS) (by popping self.team)
@@ -103,7 +103,7 @@ class PokeTeam:
 
                 #append remaining 3items in self.team to a temperory queue (tempQ) (by popping self.team)
                 for i in range(tempQ.__len__()//2):
-                    tempQ.serve(self.team.pop())
+                    tempQ.append(self.team.pop())
 
                 #append first 3 items(6th,5th,4th selected) to temperory queue (tempQ) (by popping tempS)
                 for i in range(tempS.__len__()):
@@ -122,15 +122,20 @@ class PokeTeam:
                     self.team.append(self.team.serve())
 
                 #push bottom 3 items of self.team in a temperory stack (by serving self.team)
-                for i in range(0,self.team.__len()//2):
+                for i in range(0,self.team.__len__()//2):
                     temp.push(self.team.serve())
 
                 #append those 3 item back to self.team-> [1,2,3,6,5,4] (by popping temp)
                 for i in range(0,temp.__len__()):
                     self.team.append(temp.pop())
 
-            #elif battle_mode == BattleMode.OPTIMISE:
-                
+            elif battle_mode == BattleMode.OPTIMISE:
+                temp = ArraySortedList(self.team.__len__())
+                counter = 0
+                for i in range(self.team.__len__()-1,-1,-1):
+                    temp.__setitem__(counter,self.team.__getitem__(i))
+                    counter+=1
+                self.team = temp
 
 
 
@@ -138,14 +143,28 @@ class PokeTeam:
         
 
     def __getitem__(self, index: int):
-        return self.team.__getitem__(index)
+        temp = ArrayR(self.team.__len__())
+        if type(self.team) == ArrayStack:
+            for i in range(self.team.__len__()):
+                temp.__setitem__(i,self.team.pop())
+            return temp.__getitem__(index)
+        
+        elif type(self.team) == CircularQueue:
+            for i in range(self.team.__len__()):
+                temp.__setitem__(i,self.team.serve())
+            return temp.__getitem__(index)
+
+        elif type(self.team) == ArraySortedList:
+            return self.team.__getitem__(index).value
+        #return self.team[index]
 
     def __len__(self):
         return self.team.__len__()
 
     def __str__(self):
-        return self.team[0:]+"\n"
-
+         for i in range(self.team.__len__()):
+            print(self.team.__getitem__(i))
+        
 class Trainer:
 
     def __init__(self, name) -> None:
@@ -164,7 +183,7 @@ class Trainer:
             
 
     def get_team(self) -> PokeTeam:
-        return self.TrainerTeam.team
+        return self.TrainerTeam
 
     def get_name(self) -> str:
         return self.TrainerName
@@ -184,9 +203,10 @@ if __name__ == '__main__':
     print(t)
     t.pick_team("Random")
     t.TrainerTeam.assemble_team(BattleMode.SET)
+    print(t.TrainerTeam)
     t.TrainerTeam.special(BattleMode.SET)
-    print(t)
-    print(t.get_team())
+    print(t.TrainerTeam)
+    #print(t.get_team())
 
 
     
