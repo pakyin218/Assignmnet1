@@ -40,6 +40,7 @@ class PokeTeam:
     def choose_randomly(self) -> None:
         all_pokemon = get_all_pokemon_types()
         self.team_count = 0
+        self.team = ArrayR(self.TEAM_LIMIT)
         for i in range(self.TEAM_LIMIT):
             rand_int = random.randint(0, len(all_pokemon)-1)
             self.team[i] = all_pokemon[rand_int]()
@@ -156,14 +157,19 @@ class PokeTeam:
 
         elif type(self.team) == ArraySortedList:
             return self.team.__getitem__(index).value
+        
+        elif type(self.team) == ArrayR:
+            return self.team.__getitem__(index)
         #return self.team[index]
 
     def __len__(self):
         return self.team.__len__()
 
     def __str__(self):
-         for i in range(self.team.__len__()):
-            print(self.team.__getitem__(i))
+        #  for i in range(self.team.__len__()):
+        #     print(self.team.__getitem__(i))
+        for i in self.team.array:
+            print(i)
         
 class Trainer:
 
